@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('articles', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id.replace(/^\d+-/, '') }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const slug = post.id.replace(/^\d+-/, '');
+const { Content } = await render(post);
+const d = post.data;
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: d.title,
+  description: d.description,
+  datePublished: d.pubDate.toISOString(),
+  ...(d.updatedDate && { dateModified: d.updatedDate.toISOString() }),
+  author: { '@type': 'Organization', name: 'Seasoned Steel', url: 'https://seasonedsteel.com/about/' },
+  publisher: { '@type': 'Organization', name: 'Seasoned Steel' },
+  mainEntityOfPage: `https://seasonedsteel.com/articles/${slug}/`,
+};
+
+const howToLd = d.type === 'howto' && d.howToSteps ? {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: d.title,
+  description: d.description,
+  step: d.howToSteps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, text: s })),
+} : null;
+
+const faqLd = d.faq?.length ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: d.faq.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+} : null;
+---
+<Base title={d.title} description={d.description}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+    {howToLd && <script type="application/ld+json" set:html={JSON.stringify(howToLd)} />}    
+    {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}    
+  </Fragment>
+  <p class="meta">
+    {d.cluster} &middot; Published {d.pubDate.toISOString().slice(0, 10)}
+    {d.updatedDate && <> &middot; Updated {d.updatedDate.toISOString().slice(0, 10)}</>}
+  </p>
+  <h1>{d.title}</h1>
+  <Content />
+</Base>

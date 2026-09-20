@@ -1,0 +1,53 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+}
+const { title, description, canonical } = Astro.props;
+const site = 'https://seasonedsteel.com';
+const fullTitle = title === 'Seasoned Steel' ? title : `${title} | Seasoned Steel`;
+const url = canonical ?? new URL(Astro.url.pathname, site).href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Seasoned Steel" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta name="twitter:card" content="summary" />
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav>
+        <a class="brand" href="/">Seasoned Steel</a>
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div>
+        <p>Seasoned Steel is reader-supported. When you buy through links on this site, we may earn an affiliate commission at no extra cost to you. <a href="/affiliate-disclosure/">Learn more</a>.</p>
+        <p>&copy; 2026 Robert Awere (RobClawx). All rights reserved.</p>
+        <p>Thanks for visiting seasonedsteel.com. The articles and content on this site are protected by copyright and may not be copied, shared, or reused without permission. If you would like to request permission to use any content, please email <a href="mailto:hello@seasonedsteel.com">hello@seasonedsteel.com</a>.</p>
+        <nav>
+          <a href="/privacy-policy/">Privacy Policy</a>
+          <a href="/affiliate-disclosure/">Affiliate Disclosure</a>
+          <a href="/rss.xml">RSS</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
