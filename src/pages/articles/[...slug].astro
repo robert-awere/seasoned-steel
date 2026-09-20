@@ -8,9 +8,9 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const slug = post.id.replace(/^\d+-/, '');
 const { Content } = await render(post);
 const d = post.data;
+const slug = post.id.replace(/^\d+-/, '');
 
 const articleLd = {
   '@context': 'https://schema.org',
@@ -45,12 +45,13 @@ const faqLd = d.faq?.length ? {
 <Base title={d.title} description={d.description}>
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
-    {howToLd && <script type="application/ld+json" set:html={JSON.stringify(howToLd)} />}    
-    {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}    
+    {howToLd && <script type="application/ld+json" set:html={JSON.stringify(howToLd)} />}
+    {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
   </Fragment>
   <p class="meta">
-    {d.cluster} &middot; Published {d.pubDate.toISOString().slice(0, 10)}
-    {d.updatedDate && <> &middot; Updated {d.updatedDate.toISOString().slice(0, 10)}</>}
+    <span class="chip">{d.cluster}</span>
+    <span>Published {d.pubDate.toISOString().slice(0, 10)}</span>
+    {d.updatedDate && <span>&middot; Updated {d.updatedDate.toISOString().slice(0, 10)}</span>}
   </p>
   <h1>{d.title}</h1>
   <Content />

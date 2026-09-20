@@ -11,8 +11,10 @@ const posts = (await getCollection('articles', ({ data }) => !data.draft))
   {posts.length === 0 && <p><em>First guides are in the works — check back soon.</em></p>}
   <ul class="article-list">
     {posts.map((p) => (
-      <li>
-        <a href={`/articles/${p.id.replace(/^\d+-/, '')}/`}>{p.data.title}</a>
+      <li class="card">
+        <span class="chip">{p.data.cluster}</span>
+        <a class="card-title" href={`/articles/${p.id.replace(/^\d+-/, '')}/`}>{p.data.title}</a>
+        <p class="card-desc">{p.data.description}</p>
         <div class="date">{p.data.pubDate.toISOString().slice(0, 10)}</div>
       </li>
     ))}
